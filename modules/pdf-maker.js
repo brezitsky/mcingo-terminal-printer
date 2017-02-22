@@ -7,22 +7,25 @@ class PDFmaker {
 	constructor() {
 		this._columns = [
 			{
-				id: 'cabinet',
-				header: 'Кабінет',
-				width: 45,
-				align: 'center'
-			},
-			{
 				id: 'time',
 				header: 'Час',
-				width: 45,
-				align: 'center'
+				width: 30,
+				align: 'center',
+				// lineGap: .5
+			},
+			{
+				id: 'cabinet',
+				header: 'Каб.',
+				width: 35,
+				align: 'center',
+				// lineGap: .5
 			},
 			{
 				id: 'doctor',
 				header: 'Лікар',
-				width: 115,
-				align: 'left'
+				width: 140,
+				align: 'left',
+				// lineGap: .5
 			}
 		]
 
@@ -30,10 +33,13 @@ class PDFmaker {
 			'PFDinTextCompProLight_0',
 			'pfDinTextCondPro_regular',
 			'RobotoRegular_gdi',
-			'Verdana_regular'
+			'Verdana_regular',
+			'arial',
+			'arialbd'
 		]
 
-		this._font = `./fonts/${this.fonts[1]}.ttf`;
+		this._font1 = `./fonts/${this.fonts[2]}.ttf`;
+		this._font2 = `./fonts/${this.fonts[5]}.ttf`;
 
 		this._output = './pdf/test.pdf';
 
@@ -50,8 +56,12 @@ class PDFmaker {
 		return this._columns;
 	}
 
-	get font() {
-		return this._font;
+	get font1() {
+		return this._font1;
+	}
+
+	get font2() {
+		return this._font2;
 	}
 
 	get output() {
@@ -150,10 +160,20 @@ class PDFmaker {
 
 		// console.log(json);
 
+		let x1 = 0, x2 = 0;
+
+		json.doctorList.map(item => {
+			item.doctor.length >= 24 ? x2++ : x1++;
+		})
+
+		// console.log(x1, x2);
+
 		try {
 			let doc = new PDFDocument({
 				autoFirstPage: false,
-				size: [227, 163 + json.doctorList.length * (5.95 * 2.8375)],
+				// size: [227, 163 + json.doctorList.length * (5.95 * 2.8375)],
+				// size: [227, 397.25],
+				size: [227, 251 + 29*x1 + 44*x2],
 				margins: {
 					top: 0, right: 10, bottom: 0, left: 10
 				}
@@ -180,33 +200,46 @@ class PDFmaker {
 
 			doc.addPage();
 
-			doc.font(this.font)
 
-			doc.image('./images/logo-big.png', (227/2 - 100/2), 5, {
-				fit: [100, 100]
+			doc.image('./images/logo-big.png', (227/2 - 120/2) + 10, 5, {
+				fit: [120, 100]
 			})
 
-			doc.moveDown(5.5)
+			doc.moveDown(6.2)
 
+			doc.font(this.font1)
+			doc.fontSize(11)
+			doc.text(`Доброго дня,`, {
+				align: 'center',
+				characterSpacing: .5
+			})
+			doc.moveDown(.4)
+
+			doc.fontSize(11)
+			doc.font(this.font2)
+			doc.text(`${json.user}!`, {
+				align: 'center',
+				characterSpacing: .3
+			})
+			doc.moveDown(.7)
+
+			doc.font(this.font1)
 			doc.fontSize(8)
-			doc.text(`Доброго дня, ${json.user}!`, {
-				align: 'center'
-			})
-
-			doc.moveDown(.3)
-			doc.fontSize(7)
 			doc.text('Дякуємо, що скористалися електронним сервісом.', {
 				align: 'center'
 			})
+			doc.moveDown(.2)
 			doc.text('Нижче наведений список лікарів для відвідування:', {
 				align: 'center'
 			})
 
 			doc.moveDown(1)
 
+			doc.fontSize(11)
 			table.addBody(json.doctorList);
 
-			doc.fontSize(6)
+
+			doc.fontSize(8)
 			doc.text('Ви можете використати сервіс електронної реєстрації на Вашому смартфоні чи планшеті.', {
 				align: 'center'
 			})
@@ -215,7 +248,7 @@ class PDFmaker {
 			})
 
 			doc.moveDown(.5)
-			doc.fontSize(5)
+			doc.fontSize(9)
 			let date = this.generateDate()
 
 			doc.text(`${date.date}, ${date.time}`, {
