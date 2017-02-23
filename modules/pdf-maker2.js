@@ -9,15 +9,22 @@ class PDFmaker {
 			{
 				id: 'time',
 				header: 'Час',
-				width: 100,
+				width: 30,
 				align: 'center',
 				// lineGap: .5
 			},
 			{
 				id: 'cabinet',
 				header: 'Каб.',
-				width: 100,
+				width: 35,
 				align: 'center',
+				// lineGap: .5
+			},
+			{
+				id: 'doctor',
+				header: 'Лікар',
+				width: 140,
+				align: 'left',
 				// lineGap: .5
 			}
 		]
@@ -166,8 +173,7 @@ class PDFmaker {
 				autoFirstPage: false,
 				// size: [227, 163 + json.doctorList.length * (5.95 * 2.8375)],
 				// size: [227, 397.25],
-				// size: [227, 251 + 29*x1 + 44*x2],
-				size: [227, 220 + json.doctorList.length * 45],
+				size: [227, 251 + 29*x1 + 44*x2],
 				margins: {
 					top: 0, right: 10, bottom: 0, left: 10
 				}
@@ -227,51 +233,10 @@ class PDFmaker {
 				align: 'center'
 			})
 
-			doc.moveDown(.5)
+			doc.moveDown(1)
 
-			json.doctorList.map((item, i) => {
-				doc.fontSize(10)
-				doc.text('Час:', {
-					continued: true
-				})
-				doc.fontSize(11)
-				doc.font(this.font2)
-				doc.moveDown(.05)
-				doc.text(item.time, doc.x + 25, doc.y)
-
-				doc.fontSize(10)
-				doc.font(this.font1)
-				doc.text('Кабінет: ', {
-					continued: true
-				})
-				doc.fontSize(11)
-				doc.font(this.font2)
-				doc.moveDown(.05)
-				doc.text(item.cabinet, doc.x + 5, doc.y)
-
-				doc.fontSize(10)
-				doc.font(this.font1)
-				doc.text('Лікар: ', {
-					continued: true
-				})
-				doc.fontSize(10)
-				// doc.moveDown(.04)
-				let doctor = item.doctor;
-				if(doctor.length > 27) {
-					doctor = `${doctor.substr(0, 26)}...`
-				}
-				doc.text(doctor, doc.x + 15, doc.y, {
-					ellipsis: true,
-					lineBreak: true,
-					width: 50
-				})
-
-				doc.moveDown(.2)
-				i != json.doctorList.length - 1 ? doc.rect(doc.x, doc.y, 200, 0).stroke() : false;
-				doc.moveDown(.2)
-			})
-
-			// table.addBody(json.doctorList);
+			doc.fontSize(11)
+			table.addBody(json.doctorList);
 
 
 			doc.fontSize(8)
