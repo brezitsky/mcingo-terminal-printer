@@ -40,7 +40,7 @@ class PDFmaker {
 
 		this._foxitFullPath = 'C:\\Program Files (x86)\\Foxit Software\\Foxit Reader\\FoxitReader.exe'
 
-		this._pdfFullPath = 'C:\\DENWER\\home\\192.168.0.125\\www\\mc-terminal-printer\\pdf\\test.pdf'
+		this._pdfFullPath = 'C:\\DENWER\\home\\192.168.0.125\\www\\mcingo-terminal-printer\\pdf\\test.pdf'
 
 		this._callback = () => {}
 	}
@@ -127,7 +127,7 @@ class PDFmaker {
 	print(callback) {
 		// let command = `"${this.foxit}" /t "${this.pdf}" "${this.printer}"`
 
-		let command = ''
+		let command = '';
 
 		child_process.exec(command, (err, stdout, stderr) => {
 			if(err) {
@@ -161,13 +161,30 @@ class PDFmaker {
 
 		// console.log(x1, x2);
 
+		let user = json.user.trim();
+		user = user.replace(/\s{2,}/g, ' ');
+		// console.log(user.length);
+		let userHeight;
+		if(user.length <= 17) {
+			userHeight = 0;
+		}
+		else if(17 < user.length && user.length <= 35) {
+			userHeight = 17;
+		}
+		else if(35 < user.length && user.length <= 53) {
+			userHeight = 34;
+		}
+		else if(53 < user.length && user.length <= 71) {
+			userHeight = 51;
+		}
+
 		try {
 			let doc = new PDFDocument({
 				autoFirstPage: false,
 				// size: [227, 163 + json.doctorList.length * (5.95 * 2.8375)],
 				// size: [227, 397.25],
 				// size: [227, 251 + 29*x1 + 44*x2],
-				size: [227, 220 + json.doctorList.length * 45],
+				size: [227, 220 + userHeight + json.doctorList.length * 45],
 				margins: {
 					top: 0, right: 10, bottom: 0, left: 10
 				}
@@ -211,7 +228,7 @@ class PDFmaker {
 
 			doc.fontSize(11)
 			doc.font(this.font2)
-			doc.text(`${json.user}!`, {
+			doc.text(`${user}!`, {
 				align: 'center',
 				characterSpacing: .3
 			})
